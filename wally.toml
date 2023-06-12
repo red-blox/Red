@@ -1,0 +1,13 @@
+[package]
+name = "red-blox/red"
+version = "2.0.0"
+registry = "https://github.com/UpliftGames/wally-index"
+realm = "shared"
+license = "MIT"
+include = ["default.project.json", "lib", "lib/**", "LICENSE", "wally.toml"]
+exclude = ["**"]
+
+[dependencies]
+Promise = "red-blox/promise@^1.0.0"
+Clock = "red-blox/clock@^1.0.0"
+Spawn = "red-blox/spawn@^1.0.0"

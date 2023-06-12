@@ -1,0 +1,9 @@
+{
+	"name": "RedDev",
+	"tree": {
+		"$path": "Packages",
+		"Red": {
+			"$path": "lib"
+		}
+	}
+}
