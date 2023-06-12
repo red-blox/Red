@@ -32,7 +32,7 @@ An event can only have a single listener. Multiple calls to `On` will overwrite 
 
 ## Listening to Function-Like Events
 
-Function-like events are events that are called, and the listener returns values back to the caller. They are also listened to by using the `On` method. The difference in what makes a function-like event is how it's called (Covered [here](./sending-invoking-events)).
+Function-like events are events that are called, and the listener returns values back to the caller. They are also listened to by using the `On` method. The difference in what makes a function-like event is how it's called (Covered [here](./sending-calling-events)).
 
 ::: code-group
 

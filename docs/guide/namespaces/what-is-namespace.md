@@ -26,7 +26,7 @@ Do not dynamically create namespaces. Namespace objects are never GC'd, dynamica
 
 ## Namespaces & Events
 
-Events are not their own object, they can only be interacted with through namespaces. As an example, let's fire an event to the server from the client. You'll learn more about firing events in the [Sending and Invoking Events](./sending-invoking-events) section.
+Events are not their own object, they can only be interacted with through namespaces. As an example, let's fire an event to the server from the client. You'll learn more about firing events in the [Sending and Calling Events](./sending-calling-events) section.
 
 ```lua
 local Net = Red.Client("NamespaceName")
