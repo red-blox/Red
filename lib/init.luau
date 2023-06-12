@@ -41,7 +41,7 @@ local ClientEvent = require(script.ClientEvent)
 local ServerEvent = require(script.ServerEvent)
 
 local Server = {}
-Server.__index = {}
+Server.__index = Server
 
 function Server.new(Name: string)
 	return setmetatable({
@@ -137,6 +137,7 @@ function Server.On(self: Server, EventName: string, Callback: (Player, ...any) -
 end
 
 local Client = {}
+Client.__index = Client
 
 function Client.new(Name: string)
 	return setmetatable({
