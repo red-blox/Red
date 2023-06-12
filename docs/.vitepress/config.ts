@@ -29,7 +29,6 @@ function sidebar() {
 					{ text: 'Listening to Events', link: '/guide/namespaces/listening-events' },
 					{ text: 'Sending and Calling Events', link: '/guide/namespaces/sending-calling-events' },
 					{ text: 'Replicating Data', link: '/guide/namespaces/replicating-data' },
-					{ text: 'Identifiers', link: '/guide/namespaces/identifiers' },
 				]
 			},
 			{
