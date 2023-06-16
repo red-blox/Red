@@ -19,7 +19,7 @@ ClientEvent.ActiveCallMap = {} :: { [string]: { Resolve: (...any) -> (), Reject:
 function ClientEvent.Start()
 	debug.setmemorycategory("Red.ClientEvent.Start")
 
-	Remote.OnClientEvent:Connect(function(Player, FireSection, CallSection)
+	Remote.OnClientEvent:Connect(function(FireSection, CallSection)
 		debug.profilebegin("Red.ClientEvent.Start")
 
 		if FireSection then
@@ -30,7 +30,7 @@ function ClientEvent.Start()
 
 				if Callback then
 					for _, Call in CallList do
-						Spawn(Callback, Player, unpack(Call))
+						Spawn(Callback, unpack(Call))
 					end
 				end
 			end
