@@ -1,42 +1,45 @@
 /* eslint-disable roblox-ts/no-private-identifier */
-import { SerdesModule } from "./Serdes";
-import * as IdentifierModule from "./Identifier";
+import Serdes from "./Serdes";
+import Identifier from "./Identifier";
+import promise from "shared/_Index/red-blox_promise@1.0.0/promise/Promise";
 
-export namespace Red {
-	export import Serdes = SerdesModule;
-	export import Identifier = IdentifierModule;
+declare class Server {
+	public Name: string;
+	public FolderInstance?: Folder;
 
-	export class Server {
-		public Name: string;
-		public FolderInstance?: Folder;
-
-		public constructor(Name: string);
-
-		public Fire(self: Server, Player: Player, EventName: string, ...Args: unknown[]): void;
-		public FireAll(self: Server, EventName: string, ...Args: unknown[]): void;
-		public FireAllExcept(self: Server, Except: Player, EventName: string, ...Args: unknown[]): void;
-		public FireList(self: Server, PlayerList: Player[], EventName: string, ...Args: unknown[]): void;
-		public FireWithFilter(
-			self: Server,
-			Filter: (Player: Player) => boolean,
-			EventName: string,
-			...Args: unknown[]
-		): void;
-		public Folder(self: Server, Player?: Player): Folder;
-		public On(self: Server, EventName: string, Callback: (Player: Player, ...Args: unknown[]) => void): void;
-	}
-
-	export class Client {
-		public Name: string;
-		public FolderInstance?: Folder;
-		public LocalFolderInstance?: Folder;
-
-		public constructor(Name: string);
-
-		public Fire(self: Client, EventName: string, ...Args: unknown[]): void;
-		public Call(self: Client, EventName: string, ...Args: unknown[]): Promise<unknown>;
-		public On(self: Client, EventName: string, ...Args: unknown[]): Promise<unknown>;
-		public Folder(self: Client): Folder;
-		public LocalFolder(self: Client): Folder;
-	}
+	public Fire(Player: Player, EventName: string, ...Args: unknown[]): void;
+	public FireAll(EventName: string, ...Args: unknown[]): void;
+	public FireAllExcept(Except: Player, EventName: string, ...Args: unknown[]): void;
+	public FireList(PlayerList: Player[], EventName: string, ...Args: unknown[]): void;
+	// eslint-disable-next-line prettier/prettier
+	public FireWithFilter(
+		Filter: (Player: Player) => boolean,
+		EventName: string,
+		...Args: unknown[]
+	): void;
+	public Folder(Player?: Player): Folder;
+	// eslint-disable-next-line prettier/prettier
+	public On(
+		EventName: string,
+		Callback: (Player: Player, ...Args: unknown[]) => void,
+	): unknown[];
 }
+
+declare class Client {
+	public Name: string;
+	public FolderInstance?: Folder;
+	public LocalFolderInstance?: Folder;
+
+	public constructor(Name: string);
+
+	public Fire<E>(EventName: string, ...Args: unknown[]): promise<void, E>;
+	public Call<V, E>(EventName: string, ...Args: unknown[]): promise<V, E>;
+	public On<V, E>(EventName: string, Callback: (...Args: unknown[]) => void): promise<V, E>;
+	public Folder(): Folder;
+	public LocalFolder(): Folder;
+}
+
+declare function Server(Name: string): Server;
+declare function Client(Name: string): Client;
+
+export { Serdes, Identifier, Server, Client };
