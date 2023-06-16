@@ -70,12 +70,12 @@ function Server.FireAll(self: Server, EventName: string, ...)
 	end)
 end
 
-function Server.FireAllExcept(self: Server, EventName: string, ...)
+function Server.FireAllExcept(self: Server, Except: Player, EventName: string, ...)
 	local Args = { ... }
 
 	Event.Shared(self.Name .. ":" .. EventName):Then(function(EventId)
 		for _, Player in Players:GetPlayers() do
-			if Player ~= Players.LocalPlayer then
+			if Player ~= Except then
 				ServerEvent.Fire(Player, EventId, Args)
 			end
 		end
