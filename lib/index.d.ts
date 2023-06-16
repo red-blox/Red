@@ -1,7 +1,7 @@
 /* eslint-disable roblox-ts/no-private-identifier */
 import Serdes from "./Serdes";
 import Identifier from "./Identifier";
-import promise from "shared/_Index/red-blox_promise@1.0.0/promise/Promise";
+import promise from "../../../red-blox_promise@1.0.0/promise/Promise";
 
 declare class Server {
 	public Name: string;
