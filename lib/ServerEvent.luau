@@ -44,7 +44,7 @@ function ServerEvent.Start()
 					for _, Call in CallList do
 						Spawn(function()
 							local CallId = table.remove(Call, 1) :: any
-							local Result = { pcall(Callback, Player, unpack(Call)) }
+							local Result = { CallId, pcall(Callback, Player, unpack(Call)) }
 
 							if not ServerEvent.OutgoingMap[Player] then
 								ServerEvent.OutgoingMap[Player] = {}
@@ -54,7 +54,6 @@ function ServerEvent.Start()
 								ServerEvent.OutgoingMap[Player].Call = {}
 							end
 
-							table.insert(Result, 1, CallId)
 							table.insert((ServerEvent.OutgoingMap[Player].Call :: any), Result)
 						end)
 					end
