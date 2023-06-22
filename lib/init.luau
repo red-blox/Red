@@ -55,7 +55,7 @@ export type Server = typeof(Server.new(...))
 function Server.Fire(self: Server, Player: Player, EventName: string, ...)
 	local Args = { ... }
 
-	Event.Shared(self.Name .. ":" .. EventName):Then(function(EventId)
+	Event.Shared(self.Name .. "_" .. EventName):Then(function(EventId)
 		ServerEvent.Fire(Player, EventId, Args)
 	end)
 end
@@ -63,7 +63,7 @@ end
 function Server.FireAll(self: Server, EventName: string, ...)
 	local Args = { ... }
 
-	Event.Shared(self.Name .. ":" .. EventName):Then(function(EventId)
+	Event.Shared(self.Name .. "_" .. EventName):Then(function(EventId)
 		for _, Player in Players:GetPlayers() do
 			ServerEvent.Fire(Player, EventId, Args)
 		end
@@ -73,7 +73,7 @@ end
 function Server.FireAllExcept(self: Server, Except: Player, EventName: string, ...)
 	local Args = { ... }
 
-	Event.Shared(self.Name .. ":" .. EventName):Then(function(EventId)
+	Event.Shared(self.Name .. "_" .. EventName):Then(function(EventId)
 		for _, Player in Players:GetPlayers() do
 			if Player ~= Except then
 				ServerEvent.Fire(Player, EventId, Args)
@@ -85,7 +85,7 @@ end
 function Server.FireList(self: Server, PlayerList: { Player }, EventName: string, ...)
 	local Args = { ... }
 
-	Event.Shared(self.Name .. ":" .. EventName):Then(function(EventId)
+	Event.Shared(self.Name .. "_" .. EventName):Then(function(EventId)
 		for _, Player in PlayerList do
 			ServerEvent.Fire(Player, EventId, Args)
 		end
@@ -95,7 +95,7 @@ end
 function Server.FireWithFilter(self: Server, Filter: (Player) -> boolean, EventName: string, ...)
 	local Args = { ... }
 
-	Event.Shared(self.Name .. ":" .. EventName):Then(function(EventId)
+	Event.Shared(self.Name .. "_" .. EventName):Then(function(EventId)
 		for _, Player in Players:GetPlayers() do
 			if Filter(Player) then
 				ServerEvent.Fire(Player, EventId, Args)
@@ -131,7 +131,7 @@ function Server.Folder(self: Server, Player: Player?)
 end
 
 function Server.On(self: Server, EventName: string, Callback: (Player, ...any) -> nil)
-	Event.Shared(self.Name .. ":" .. EventName):Then(function(EventId)
+	Event.Shared(self.Name .. "_" .. EventName):Then(function(EventId)
 		ServerEvent.Listen(EventId, Callback)
 	end)
 end
@@ -152,7 +152,7 @@ export type Client = typeof(Client.new(...))
 function Client.Fire(self: Client, EventName: string, ...)
 	local Args = { ... }
 
-	return Event.Shared(self.Name .. ":" .. EventName):Then(function(EventId)
+	return Event.Shared(self.Name .. "_" .. EventName):Then(function(EventId)
 		ClientEvent.Fire(EventId, Args)
 	end)
 end
@@ -160,13 +160,13 @@ end
 function Client.Call(self: Client, EventName: string, ...)
 	local Args = { ... }
 
-	return Event.Shared(self.Name .. ":" .. EventName):Then(function(EventId)
+	return Event.Shared(self.Name .. "_" .. EventName):Then(function(EventId)
 		return ClientEvent.Call(EventId, Args)
 	end)
 end
 
 function Client.On(self: Client, EventName: string, Callback: (...any) -> ())
-	Event.Shared(self.Name .. ":" .. EventName):Then(function(EventId)
+	Event.Shared(self.Name .. "_" .. EventName):Then(function(EventId)
 		ClientEvent.Listen(EventId, Callback)
 	end)
 end
