@@ -23,7 +23,7 @@ function ClientEvent.Start()
 		debug.profilebegin("Red.ClientEvent.Start")
 
 		if FireSection then
-			debug.profilebegin("Red.ClientEvent.Start.MultipleFire")
+			debug.profilebegin("Red.ClientEvent.Start.Fire")
 
 			for EventId, CallList in FireSection do
 				local Callback = ClientEvent.ListenerMap[EventId]
