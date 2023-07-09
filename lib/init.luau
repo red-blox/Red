@@ -181,11 +181,7 @@ end
 
 function Client.LocalFolder(self: Client)
 	if not self.LocalFolderInstance then
-		local Folder = Instance.new("Folder")
-		Folder.Name = self.Name
-		Folder.Parent = ClientFolder
-
-		self.LocalFolderInstance = Folder
+		self.LocalFolderInstance = ClientFolder:WaitForChild(self.Name) :: Folder
 	end
 
 	return self.LocalFolderInstance :: Folder
