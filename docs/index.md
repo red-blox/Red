@@ -11,6 +11,9 @@ hero:
       text: Get Started
       link: /guide/introduction/what-is-red
     - theme: alt
+      text: API Reference
+      link: /2.0/Red
+    - theme: alt
       text: View on GitHub
       link: https://github.com/red-blox/Red
 
