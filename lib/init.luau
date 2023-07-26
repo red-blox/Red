@@ -133,6 +133,11 @@ end
 function Server.On(self: Server, EventName: string, Callback: (Player, ...any) -> nil)
 	Event.Shared(self.Name .. "_" .. EventName):Then(function(EventId)
 		ServerEvent.Listen(EventId, Callback)
+		return function() -- Disconnect Function (NO IDENTIFIER REMOVAL)
+			Event.Retreive(self.Name .. "_" .. EventName).Then(function(EventId) -- retreive Event Identifier by Remote Name
+				ServerEvent.Unlink(EventId) -- unlink from ServerEvent ListenerMap
+			end)
+		end
 	end)
 end
 
@@ -168,6 +173,11 @@ end
 function Client.On(self: Client, EventName: string, Callback: (...any) -> ())
 	Event.Shared(self.Name .. "_" .. EventName):Then(function(EventId)
 		ClientEvent.Listen(EventId, Callback)
+		return function() -- Disconnect Function (NO IDENTIFIER REMOVAL)
+			Event.Retreive(self.Name .. "_" .. EventName).Then(function(EventId) -- retreive Event Identifier by Remote Name
+				ClientEvent.Unlink(EventId) -- unlink from ServerEvent ListenerMap
+			end)
+		end
 	end)
 end
 

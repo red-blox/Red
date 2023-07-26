@@ -36,6 +36,18 @@ function Event.Shared(Name: string)
 	end
 end
 
+function Event.Retreive(Name: string)
+	if Remote:GetAttribute(Name) then
+		return Promise.Resolve(Remote:GetAttribute(Name))
+	else
+		return Promise.new(function(Resolve)
+			Remote:GetAttributeChangedSignal(Name):Once(function()
+				Resolve(Remote:GetAttribute(Name))
+			end)
+		end)
+	end
+end
+
 function Event.Unique()
 	NextUnique += 1
 

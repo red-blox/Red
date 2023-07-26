@@ -111,5 +111,8 @@ end
 function ServerEvent.Listen(EventId: string, Callback: (Player, ...any) -> ())
 	ServerEvent.ListenerMap[EventId] = Callback
 end
+function ServerEvent.Unlink(EventId: string)
+	ServerEvent.ListenerMap[EventId] = nil
+end
 
 return ServerEvent

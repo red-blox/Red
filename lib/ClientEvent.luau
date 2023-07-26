@@ -109,4 +109,8 @@ function ClientEvent.Listen(EventId: string, Callback: (Player, ...any) -> ())
 	ClientEvent.ListenerMap[EventId] = Callback
 end
 
+function ClientEvent.Listen(EventId: string)
+	ClientEvent.ListenerMap[EventId] = nil
+end
+
 return ClientEvent
