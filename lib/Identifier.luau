@@ -2,10 +2,6 @@ local function UInt(Integer: number)
 	return string.pack(`I{if Integer == 0 then 1 else math.ceil(math.log(Integer + 1, 2) / 8)}`, Integer)
 end
 
-local function SInt(Integer: number)
-	return string.pack(`i{if Integer == 0 then 1 else math.ceil(math.log(math.abs(Integer) + 1, 2) / 8)}`, Integer)
-end
-
 local function Enum<T>(Map: T & { [string]: any }): T
 	local KeyList = {}
 
@@ -23,7 +19,5 @@ local function Enum<T>(Map: T & { [string]: any }): T
 end
 
 return {
-	UInt = UInt,
-	SInt = SInt,
 	Enum = Enum,
 }

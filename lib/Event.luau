@@ -3,20 +3,22 @@ local RunService = game:GetService("RunService")
 
 local Promise = require(script.Parent.Parent.Promise)
 
-local Identifier = require(script.Parent.Identifier)
-
 local Remote = ReplicatedStorage:WaitForChild("RedEvent")
 local Event = {}
 
 local NextShared = 0
 local NextUnique = 0
 
+local function UInt(Integer: number)
+	return string.pack(`I{if Integer == 0 then 1 else math.ceil(math.log(Integer + 1, 2) / 8)}`, Integer)
+end
+
 function Event.Shared(Name: string)
 	if RunService:IsServer() then
 		if Remote:GetAttribute(Name) then
 			return Promise.Resolve(Remote:GetAttribute(Name))
 		else
-			local Id = Identifier.UInt(NextShared)
+			local Id = UInt(NextShared)
 			NextShared += 1
 
 			Remote:SetAttribute(Name, Id)
@@ -43,7 +45,7 @@ function Event.Unique()
 		NextUnique = 0
 	end
 
-	return Identifier.UInt(NextUnique)
+	return UInt(NextUnique)
 end
 
 return Event

@@ -1,6 +1,6 @@
 # Serdes
 
-Serdes is a system that allows you to serialize and deserialize data. It can be used to reduce the amount of data sent over the network. Serdes should be used for dynamic data, for static data refer to [Identifiers](./identifiers).
+Serdes is a system that allows you to serialize and deserialize data. It can be used to reduce the amount of data sent over the network.
 
 ## The Serdes Type
 

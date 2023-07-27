@@ -15,11 +15,14 @@ local Any: Serdes<any, any> = {
 
 local Integer: Serdes<number, string> = {
 	Ser = function(Integer: number): string
-		return string.pack(`i{if Integer == 0 then 1 else math.ceil(math.log(Integer + 1, 2) / 8)}`, Integer)
+		return string.pack(
+			`i{if Integer == 0 then 1 else math.ceil((math.log(math.abs(Integer) + 1, 2) + 1) / 8)}`,
+			Integer
+		)
 	end,
 
 	Des = function(String: string): number
-		return string.unpack(`i{#String}`, String)
+		return string.unpack(`i{if #String == 0 then 1 else #String}`, String)
 	end,
 }
 
