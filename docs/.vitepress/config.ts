@@ -70,7 +70,17 @@ export default defineConfig({
 			{ icon: 'discord', link: 'https://discord.gg/mchCdAFPWU' },
 		],
 
+		search: {
+			provider: 'algolia',
+			options: {
+				appId: 'OXUAMIFLZV',
+				apiKey: 'b30ea2870076353706bb93154da80143',
+				indexName: 'red',
+
+			}
+		},
+
 		nav: nav(),
 		sidebar: sidebar(),
-	}
+	},
 })
