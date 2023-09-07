@@ -4,7 +4,7 @@ The root of the Red library.
 
 ## Event
 
-Creates a new [event](./Event) object.
+Creates a new [event](./Event/index) object.
 
 ```lua
 <T...>(
