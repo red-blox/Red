@@ -1,13 +1,22 @@
 [package]
 name = "red-blox/red"
-version = "2.0.0-rc.7"
+version = "2.0.0-rc.8"
 registry = "https://github.com/UpliftGames/wally-index"
 realm = "shared"
 license = "MIT"
-include = ["default.project.json", "lib", "lib/**", "LICENSE", "wally.toml", "README.md"]
 exclude = ["**"]
+include = [
+	"default.project.json",
+	"lib",
+	"lib/**",
+	"LICENSE",
+	"wally.toml",
+	"README.md",
+]
 
 [dependencies]
-Promise = "red-blox/promise@^1.0.0"
+Future = "red-blox/future@^1.0.0"
 Clock = "red-blox/clock@^1.0.0"
 Spawn = "red-blox/spawn@^1.0.0"
+Guard = "red-blox/guard@^1.0.0"
+

@@ -1,22 +1,31 @@
 # Getting Started
 
-1. Make sure you have [Rojo](https://rojo.space) and [Wally](https://wally.run) installed and set up.
-2. Add Red to your `wally.toml` file.
+Red is available for Rojo-based workflows and Studio workflows through wally.
 
-::: code-group
-```toml [wally.toml]
+## Rojo
+
+1. Make sure you have [Rojo](https://rojo.space/) and [Wally](https://wally.run/) installed.
+2. Add Red to your `wally.toml` file:
+
+```toml
 [dependencies]
-Red = "red-blox/red@^2.0.0"
+Red = "red-blox/red@2.0.0-rc.8"
 ```
-:::
 
-3. Run `wally install`.
-4. Require the module and start using Red!
+3. Run `wally install` to install packages.
 
-::: info
-Red has been designed to use Luau tooling, specifically Luau LSP. Roblox LSP *may* work, but is not officially supported.
-:::
+## Studio
 
-## What's Next?
+1. Make sure you have the [Studio Wally](https://github.com/fewkz/studio-wally) plugin installed.
+2. Add Red to your packages table:
 
-You can continue through the rest of the guide, or go directly to the API Reference.
+```lua
+return {
+    studioWallyServer = "https://studio-wally.fewkz.com",
+    packages = {
+        Red = "red-blox/red@2.0.0-rc.8"
+    }
+}
+```
+
+3. Install packages.

@@ -1,10 +1,10 @@
 local RunService = game:GetService("RunService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local Promise = require(script.Parent.Parent.Promise)
+local Future = require(script.Parent.Parent.Future)
 local Spawn = require(script.Parent.Parent.Spawn)
 
-local Event = require(script.Parent.Event)
+local Identifier = require(script.Parent.Identifier)
 
 local Remote = ReplicatedStorage:WaitForChild("RedEvent") :: RemoteEvent
 local ClientEvent = {}
@@ -14,7 +14,7 @@ type EventMap = { [string]: { Data } }
 
 ClientEvent.ListenerMap = {} :: { [string]: (...any) -> () }
 ClientEvent.OutgoingMap = {} :: { Fire: EventMap?, Call: EventMap? }
-ClientEvent.ActiveCallMap = {} :: { [string]: { Resolve: (...any) -> (), Reject: (...any) -> () } }
+ClientEvent.ActiveCallMap = {} :: { [string]: thread }
 
 function ClientEvent.Start()
 	debug.setmemorycategory("Red.ClientEvent.Start")
@@ -45,12 +45,7 @@ function ClientEvent.Start()
 				local CallId = table.remove(Call, 1) :: any
 
 				if ClientEvent.ActiveCallMap[CallId] then
-					if table.remove(Call, 1) then
-						ClientEvent.ActiveCallMap[CallId].Resolve(unpack(Call))
-					else
-						ClientEvent.ActiveCallMap[CallId].Reject(unpack(Call))
-					end
-
+					coroutine.resume(ClientEvent.ActiveCallMap[CallId], unpack(Call))
 					ClientEvent.ActiveCallMap[CallId] = nil
 				end
 			end
@@ -87,8 +82,8 @@ function ClientEvent.Fire(EventId: string, Args: { any })
 end
 
 function ClientEvent.Call(EventId: string, Args: { any })
-	return Promise.new(function(Resolve, Reject)
-		local CallId = Event.Unique()
+	return Future.new(function(EventId: string, Args: { any })
+		local CallId = Identifier.Unique()
 
 		if not ClientEvent.OutgoingMap.Call then
 			ClientEvent.OutgoingMap.Call = {}
@@ -101,11 +96,12 @@ function ClientEvent.Call(EventId: string, Args: { any })
 		table.insert(Args, 1, CallId)
 		table.insert((ClientEvent.OutgoingMap.Call :: any)[EventId], Args)
 
-		ClientEvent.ActiveCallMap[CallId] = { Resolve = Resolve, Reject = Reject }
-	end)
+		ClientEvent.ActiveCallMap[CallId] = coroutine.running()
+		return coroutine.yield()
+	end, EventId, Args)
 end
 
-function ClientEvent.Listen(EventId: string, Callback: (Player, ...any) -> ())
+function ClientEvent.Listen(EventId: string, Callback: (...any) -> ())
 	ClientEvent.ListenerMap[EventId] = Callback
 end
 

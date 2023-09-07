@@ -1,51 +1,125 @@
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 
-local Promise = require(script.Parent.Parent.Promise)
+local Identifier = require(script.Parent.Identifier)
+local ClientEvent = require(script.Parent.ClientEvent)
+local ServerEvent = require(script.Parent.ServerEvent)
 
-local Remote = ReplicatedStorage:WaitForChild("RedEvent")
+local Server = {}
+Server.__index = Server
+
+function Server.new<T...>(EventId: string, Validate: (...unknown) -> T...)
+	return setmetatable({
+		EventId = EventId,
+		Validate = Validate,
+
+		Listening = false,
+	}, Server)
+end
+
+export type Server<T...> = typeof(Server.new("", function(): T... end))
+
+function Server.Fire<T...>(self: Server<T...>, Player: Player, ...: T...)
+	ServerEvent.Fire(Player, self.EventId, table.pack(...))
+end
+
+function Server.FireAll<T...>(self: Server<T...>, ...: T...)
+	for _, Player in Players:GetPlayers() do
+		self:Fire(Player, ...)
+	end
+end
+
+function Server.FireAllExcept<T...>(self: Server<T...>, Except: Player, ...: T...)
+	for _, Player in Players:GetPlayers() do
+		if Player ~= Except then
+			self:Fire(Player, ...)
+		end
+	end
+end
+
+function Server.FireList<T...>(self: Server<T...>, PlayerList: { Player }, ...: T...)
+	for _, Player in PlayerList do
+		self:Fire(Player, ...)
+	end
+end
+
+function Server.FireWithFilter<T...>(self: Server<T...>, Filter: (Player) -> boolean, ...: T...)
+	for _, Player in Players:GetPlayers() do
+		if Filter(Player) then
+			self:Fire(Player, ...)
+		end
+	end
+end
+
+function Server.On<T...>(self: Server<T...>, Callback: (Player: Player, T...) -> ())
+	assert(self.Listening == false, "Only one listener can be given for each event.")
+	self.Listening = true
+
+	ServerEvent.Listen(self.EventId, function(Player, ...)
+		if pcall(self.Validate, ...) then
+			Callback(Player, ...)
+		end
+	end)
+end
+
+local Client = {}
+Client.__index = Client
+
+function Client.new<T...>(EventId: string, Validate: (...unknown) -> T...)
+	return setmetatable({
+		EventId = EventId,
+		Validate = Validate,
+
+		Listening = false,
+	}, Client)
+end
+
+export type Client<T...> = typeof(Client.new("", function(): T... end))
+
+function Client.Fire<T...>(self: Client<T...>, ...: T...)
+	ClientEvent.Fire(self.EventId, table.pack(...))
+end
+
+function Client.On<T...>(self: Client<T...>, Callback: (T...) -> ())
+	assert(self.Listening == false, "Only one listener can be given for each event.")
+	self.Listening = true
+
+	ClientEvent.Listen(self.EventId, Callback)
+end
+
 local Event = {}
+Event.__index = Event
 
-local NextShared = 0
-local NextUnique = 0
+function Event.new<T...>(Validate: (...unknown) -> T..., NameOverride: string?)
+	return setmetatable({
+		EventId = Identifier.Shared(NameOverride or debug.info(2, "s")):Await() :: string,
+		Validate = Validate,
 
-local function UInt(Integer: number)
-	return string.pack(`I{if Integer == 0 then 1 else math.ceil(math.log(Integer + 1, 2) / 8)}`, Integer)
+		ServerEvent = nil :: Server<T...>?,
+		ClientEvent = nil :: Client<T...>?,
+	}, Event)
 end
 
-function Event.Shared(Name: string)
-	if RunService:IsServer() then
-		if Remote:GetAttribute(Name) then
-			return Promise.Resolve(Remote:GetAttribute(Name))
-		else
-			local Id = UInt(NextShared)
-			NextShared += 1
+export type Event<T...> = typeof(Event.new(function(): T... end))
 
-			Remote:SetAttribute(Name, Id)
+function Event.Server<T...>(self: Event<T...>): Server<T...>
+	assert(RunService:IsServer(), "Cannot get server event from client.")
 
-			return Promise.Resolve(Id)
-		end
-	else
-		if Remote:GetAttribute(Name) then
-			return Promise.Resolve(Remote:GetAttribute(Name))
-		else
-			return Promise.new(function(Resolve)
-				Remote:GetAttributeChangedSignal(Name):Once(function()
-					Resolve(Remote:GetAttribute(Name))
-				end)
-			end)
-		end
+	if not ServerEvent then
+		self.ServerEvent = Server.new(self.EventId, self.Validate)
 	end
+
+	return self.ServerEvent :: Server<T...>
 end
 
-function Event.Unique()
-	NextUnique += 1
+function Event.Client<T...>(self: Event<T...>): Client<T...>
+	assert(RunService:IsClient(), "Cannot get client event from server.")
 
-	if NextUnique == 0xFFFF then
-		NextUnique = 0
+	if not ServerEvent then
+		self.ClientEvent = Client.new(self.EventId, self.Validate)
 	end
 
-	return UInt(NextUnique)
+	return self.ClientEvent :: Client<T...>
 end
 
 return Event

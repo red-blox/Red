@@ -2,6 +2,7 @@ import { defineConfig } from 'vitepress'
 
 function nav() {
 	return [
+		{ text: 'FAQ', link: '/faq' },
 		{ text: 'Guide', link: '/guide/introduction/what-is-red' },
 		{
 			text: 'API Reference',
@@ -23,19 +24,11 @@ function sidebar() {
 				]
 			},
 			{
-				text: 'Namespaces',
+				text: 'Events',
 				items: [
-					{ text: 'What is a Namespace?', link: '/guide/namespaces/what-is-namespace' },
-					{ text: 'Listening to Events', link: '/guide/namespaces/listening-events' },
-					{ text: 'Sending and Calling Events', link: '/guide/namespaces/sending-calling-events' },
-					{ text: 'Replicating Data', link: '/guide/namespaces/replicating-data' },
-				]
-			},
-			{
-				text: 'Networking Optimization',
-				items: [
-					{ text: 'Identifiers', link: '/guide/optimization/identifiers' },
-					{ text: 'Serdes', link: '/guide/optimization/serdes' },
+					{ text: 'Declaring Events', link: '/guide/events/declaring' },
+					{ text: 'Server Usage', link: '/guide/events/server' },
+					{ text: 'Client Usage', link: '/guide/events/client' },
 				]
 			},
 		],
@@ -45,10 +38,14 @@ function sidebar() {
 				text: 'API Reference',
 				items: [
 					{ text: 'Red', link: '/2.0/Red' },
-					{ text: 'Server', link: '/2.0/Server' },
-					{ text: 'Client', link: '/2.0/Client' },
-					{ text: 'Identifier', link: '/2.0/Identifier' },
-					{ text: 'Serdes', link: '/2.0/Serdes' },
+					{
+						text: 'Event',
+						link: '/2.0/Event',
+						items: [
+							{ text: 'Server', link: '/2.0/Event/Server' },
+							{ text: 'Client', link: '/2.0/Event/Client' },
+						]
+					}
 				],
 			}
 		],
