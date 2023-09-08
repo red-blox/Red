@@ -91,8 +91,16 @@ local Event = {}
 Event.__index = Event
 
 function Event.new<T...>(Validate: (...unknown) -> T..., NameOverride: string?)
+	local Name = NameOverride or debug.info(2, "s")
+
+	if string.find(Name, "-") then
+		error("Event name cannot contain '-'")
+	end
+
+	Name = string.gsub(Name, "%.", "-")
+
 	return setmetatable({
-		EventId = Identifier.Shared(NameOverride or debug.info(2, "s")):Await() :: string,
+		EventId = Identifier.Shared(Name):Await() :: string,
 		Validate = Validate,
 
 		ServerEvent = nil :: Server<T...>?,
