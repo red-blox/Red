@@ -38,7 +38,7 @@ This callback has a few rules:
 2. The callback must error if the arguments are invalid.
 3. The callback must narrow the types of the arguments.
 
-;:: info
+::: info
 This callback is only called when a client fires the event to the server. Do not use this callback as middleware, logging, or other side effects.
 :::
 
