@@ -13,6 +13,8 @@ if RunService:IsServer() then
 		Remote.Parent = ReplicatedStorage
 	end
 
+	require(script.ServerEvent).Start()
+
 	local function PlayerAdded(Player: Player)
 		local ClientFolder = Instance.new("ScreenGui")
 
@@ -29,6 +31,8 @@ if RunService:IsServer() then
 	end
 else
 	Remote = ReplicatedStorage:WaitForChild("RedEvent") :: RemoteEvent
+
+	require(script.ClientEvent).Start()
 
 	ClientFolder = (Players.LocalPlayer:FindFirstChild("PlayerGui") :: PlayerGui):WaitForChild("Red") :: ScreenGui
 	ClientFolder.Parent = nil

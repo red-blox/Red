@@ -56,7 +56,17 @@ function ClientEvent.Start()
 		debug.profileend()
 	end)
 
-	RunService.Heartbeat:Connect(function()
+	local Time = 0
+
+	RunService.Heartbeat:Connect(function(DeltaTime)
+		Time += DeltaTime
+
+		if Time < 0.014 then
+			return
+		end
+
+		Time = 0
+
 		debug.profilebegin("Red.ClientEvent.Outgoing")
 
 		if ClientEvent.OutgoingMap.Call or ClientEvent.OutgoingMap.Fire then
