@@ -97,7 +97,7 @@ function Event.new<T...>(Validate: (...unknown) -> T..., NameOverride: string?)
 		error("Event name cannot contain '-'")
 	end
 
-	Name = string.gsub(Name, "%.", "-")
+	Name = string.gsub(Name, "%.", "_")
 
 	return setmetatable({
 		EventId = Identifier.Shared(Name):Await() :: string,
@@ -113,7 +113,7 @@ export type Event<T...> = typeof(Event.new(function(): T... end))
 function Event.Server<T...>(self: Event<T...>): Server<T...>
 	assert(RunService:IsServer(), "Cannot get server event from client.")
 
-	if not ServerEvent then
+	if not self.ServerEvent then
 		self.ServerEvent = Server.new(self.EventId, self.Validate)
 	end
 
@@ -123,7 +123,7 @@ end
 function Event.Client<T...>(self: Event<T...>): Client<T...>
 	assert(RunService:IsClient(), "Cannot get client event from server.")
 
-	if not ServerEvent then
+	if not self.ClientEvent then
 		self.ClientEvent = Client.new(self.EventId, self.Validate)
 	end
 

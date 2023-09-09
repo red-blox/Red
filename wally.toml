@@ -1,6 +1,6 @@
 [package]
 name = "red-blox/red"
-version = "2.0.0-rc.9"
+version = "2.0.0-rc.10"
 registry = "https://github.com/UpliftGames/wally-index"
 realm = "shared"
 license = "MIT"
@@ -19,4 +19,3 @@ Future = "red-blox/future@^1.0.0"
 Clock = "red-blox/clock@^1.0.0"
 Spawn = "red-blox/spawn@^1.0.0"
 Guard = "red-blox/guard@^1.0.0"
-
