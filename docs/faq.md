@@ -18,7 +18,7 @@ However, events are not fully ordered.
 
 ## Ratelimiting?
 
-Red has no built-in networking, however there is a [ratelimiting utility](https://util.redblox.dev/ratelimit) available.
+Red has no built-in rate limiting; however, there is a [ratelimiting utility](https://util.redblox.dev/ratelimit) available.
 
 ```lua
 local Ratelimit = require(Path.To.Ratelimit)
