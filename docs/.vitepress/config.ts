@@ -21,6 +21,7 @@ function sidebar() {
 				items: [
 					{ text: 'What is Red?', link: '/guide/introduction/what-is-red' },
 					{ text: 'Getting Started', link: '/guide/introduction/getting-started' },
+					{ text: 'Redblox Util', link: '/guide/introduction/util' },
 				]
 			},
 			{
