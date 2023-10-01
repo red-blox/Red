@@ -39,5 +39,5 @@ else
 end
 
 return {
-	Event = require(script.Event).new,
+	Event = require(script.Event),
 }

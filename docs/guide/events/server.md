@@ -16,7 +16,7 @@ For simplicity we'll be using the same event module throughout this guide.
 local Guard = require(Path.To.Guard)
 local Red = require(Path.To.Red)
 
-return Red.Event(function(Number, String, Boolean)
+return Red.Event("MyEvent", function(Number, String, Boolean)
 	return Guard.Number(Number), Guard.String(String), Guard.Boolean(Boolean)
 end)
 ```
@@ -49,7 +49,7 @@ This will fire the event and payload to all players, and as such does not have a
 MyEvent:FireAllExcept(Player, 1, "Hello", true)
 ```
 
-This is the exact same as `FireAll`, *except* that it does not fire to the player passed as the first argument.
+This is the exact same as `FireAll`, _except_ that it does not fire to the player passed as the first argument.
 
 ### FireList
 

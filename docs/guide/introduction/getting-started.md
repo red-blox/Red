@@ -9,7 +9,7 @@ Red is available for Rojo-based workflows and Studio workflows through wally.
 
 ```toml
 [dependencies]
-Red = "red-blox/red@2.0.0-rc.8"
+Red = "red-blox/red@2.0.0"
 ```
 
 3. Run `wally install` to install packages.
@@ -23,7 +23,7 @@ Red = "red-blox/red@2.0.0-rc.8"
 return {
     studioWallyServer = "https://studio-wally.fewkz.com",
     packages = {
-        Red = "red-blox/red@2.0.0-rc.8"
+        Red = "red-blox/red@2.0.0"
     }
 }
 ```

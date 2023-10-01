@@ -13,8 +13,8 @@ type EventMap = { [string]: { Data } }
 ServerEvent.ListenerMap = {} :: { [string]: (Player, ...any) -> () }
 ServerEvent.OutgoingMap = {} :: { [Player]: { Fire: EventMap?, Call: { Data }? } }
 
-local FireSectionCheck = Guard.Check(Guard.Optional(Guard.Map(Guard.String, Guard.List(Guard.Any))))
-local CallSectionCheck = Guard.Check(Guard.Optional(Guard.Map(Guard.String, Guard.List(Guard.Any))))
+local FireSectionCheck = Guard.Check(Guard.Map(Guard.String, Guard.List(Guard.Any)))
+local CallSectionCheck = Guard.Check(Guard.Map(Guard.String, Guard.List(Guard.Any)))
 
 function ServerEvent.Start()
 	debug.setmemorycategory("Red.ServerEvent.Start")
@@ -24,7 +24,7 @@ function ServerEvent.Start()
 
 		local FireSectionValid, FireSection = FireSectionCheck(UnknownFireSection)
 
-		if FireSectionValid and FireSection then
+		if FireSectionValid then
 			debug.profilebegin("Red.ServerEvent.Start.MultipleFire")
 
 			for EventId, CallList in FireSection do
@@ -42,7 +42,7 @@ function ServerEvent.Start()
 
 		local CallSectionValid, CallSection = CallSectionCheck(UnknownCallSection)
 
-		if CallSectionValid and CallSection then
+		if CallSectionValid then
 			debug.profilebegin("Red.ServerEvent.Start.Call")
 
 			for EventId, CallList in CallSection do

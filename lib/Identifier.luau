@@ -36,6 +36,10 @@ function Identifier.Shared(Name: string)
 	end, Name)
 end
 
+function Identifier.Exists(Name: string)
+	return RunService:IsServer() and Remote:GetAttribute(Name) ~= nil
+end
+
 function Identifier.Unique()
 	NextUnique += 1
 

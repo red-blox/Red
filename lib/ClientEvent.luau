@@ -70,7 +70,7 @@ function ClientEvent.Start()
 		debug.profilebegin("Red.ClientEvent.Outgoing")
 
 		if ClientEvent.OutgoingMap.Call or ClientEvent.OutgoingMap.Fire then
-			Remote:FireServer(ClientEvent.OutgoingMap.Fire, ClientEvent.OutgoingMap.Call)
+			Remote:FireServer(ClientEvent.OutgoingMap.Fire or {}, ClientEvent.OutgoingMap.Call or {})
 
 			table.clear(ClientEvent.OutgoingMap)
 		end

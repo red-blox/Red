@@ -7,7 +7,7 @@ Create a module in ReplicatedStorage. Inside the module import Red, and return a
 ```lua
 local Red = require(Path.To.Red)
 
-return Red.Event(function()
+return Red.Event("MostBasicEvent", function()
 	return
 end)
 ```
@@ -15,7 +15,7 @@ end)
 This is the most basic event in Red. Here we've declared an event which has no payload. The event name is gathered from the module name.
 
 ::: danger
-Make sure the module name is unique - modules with the same name will return the same event. If you need to create events without using module name, `Red.Event` has a second string argument that can be used to override the name of the event. These name overrides must still be unique.
+Make sure the event name is unique - using the same name multiple times will result in an error.
 :::
 
 ## Event Payloads
@@ -25,7 +25,7 @@ We now have an event - but we can't send any data with it. To send a payload wit
 This callback is a validation check callback. This callback's purpose is to assert the types of the payload.
 
 ```lua
-return Red.Event(function(Value)
+return Red.Event("EventWithPayload", function(Value)
 	assert(type(Value) == "number")
 
 	return Value
@@ -51,7 +51,7 @@ local Guard = require(Path.To.Guard)
 
 local Check = Guard.Map(Guard.String, Guard.List(Guard.Number))
 
-return Red.Event(function(Value)
+return Red.Event("EventUsingGuard", function(Value)
 	return Check(Value)
 end)
 ```
@@ -71,7 +71,7 @@ local PlayerCheck = function(Value: unknown)
 	return Value
 end
 
-return Red.Event(function(Action, Player)
+return Red.Event("EventWithMultiplePayloads", function(Action, Player)
 	return ActionCheck(Action), PlayerCheck(Player)
 end)
 ```

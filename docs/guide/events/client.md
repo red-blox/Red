@@ -12,7 +12,7 @@ We'll also use the same event module as on the server.
 local Guard = require(Path.To.Guard)
 local Red = require(Path.To.Red)
 
-return Red.Event(function(Number, String, Boolean)
+return Red.Event("MyEvent", function(Number, String, Boolean)
 	return Guard.Number(Number), Guard.String(String), Guard.Boolean(Boolean)
 end)
 ```
