@@ -37,7 +37,7 @@ local function Client<T...>(self: Event<T...>): ClientEvent.Client<T...>
 end
 
 local function Event<T...>(Name: string, Validate: (...unknown) -> T...): Event<T...>
-	assert(not Identifier.Exists(Name), "Cannot create event with duplicate name!")
+	assert(not Identifier.Exists(Name), "Cannot use same name twice")
 
 	return {
 		Id = Identifier.Shared(Name):Await(),

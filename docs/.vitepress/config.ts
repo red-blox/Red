@@ -4,12 +4,7 @@ function nav() {
 	return [
 		{ text: 'FAQ', link: '/faq' },
 		{ text: 'Guide', link: '/guide/introduction/what-is-red' },
-		{
-			text: 'API Reference',
-			items: [
-				{ text: '2.0', link: '/2.0/Red' },
-			]
-		},
+		{ text: 'API Reference', link: '/2.0/Red' },
 	]
 }
 
@@ -32,6 +27,10 @@ function sidebar() {
 					{ text: 'Client Usage', link: '/guide/events/client' },
 				]
 			},
+			{
+				text: 'Functions',
+				link: '/guide/functions',
+			},
 		],
 
 		'/2.0/': [
@@ -46,7 +45,8 @@ function sidebar() {
 							{ text: 'Server', link: '/2.0/Event/Server' },
 							{ text: 'Client', link: '/2.0/Event/Client' },
 						]
-					}
+					},
+					{ text: 'Function', link: '/2.0/Function' },
 				],
 			}
 		],
