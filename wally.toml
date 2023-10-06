@@ -16,6 +16,5 @@ include = [
 
 [dependencies]
 Future = "red-blox/future@^1.0.0"
-Clock = "red-blox/clock@^1.0.0"
 Spawn = "red-blox/spawn@^1.0.0"
 Guard = "red-blox/guard@^1.0.0"
