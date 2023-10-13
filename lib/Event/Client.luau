@@ -22,11 +22,7 @@ local function On<T...>(self: Client<T...>, Callback: (T...) -> ())
 	assert(not self.Listening, "Event is already listening")
 	self.Listening = true
 
-	ClientEvent.Listen(self.Id, function(...)
-		if pcall(self.Validate, ...) then
-			Callback(...)
-		end
-	end)
+	ClientEvent.Listen(self.Id, Callback)
 end
 
 local function Client<T...>(Id: string, Validate: (...unknown) -> T...): Client<T...>
