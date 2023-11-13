@@ -22,9 +22,9 @@ Red is designed to work out of the box with no configuration required. Just requ
 
 Red is written with type safety in mind, so you can use Luau and get full intellisense and linting right in your editor. Full intellisense without any extra work means faster development with autocomplete and catching bugs before they happen.
 
-### 🔎Obsfucation
+### 🔎Obfuscation
 
-As part of it's optimization features, Red obsfucates network data to make it harder for cheaters to read networking logs. This makes it significantly harder for cheaters to reverse engineer and cheat in your game.
+As part of it's optimization features, Red obfuscates network data to make it harder for cheaters to read networking logs. This makes it significantly harder for cheaters to reverse engineer and cheat in your game.
 
 ## Documentation
 
