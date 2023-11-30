@@ -1,19 +1,21 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 
-local Remote
 if RunService:IsServer() then
-	if ReplicatedStorage:FindFirstChild("RedEvent") then
-		Remote = ReplicatedStorage:FindFirstChild("RedEvent") :: RemoteEvent
-	else
-		Remote = Instance.new("RemoteEvent")
-		Remote.Name = "RedEvent"
-		Remote.Parent = ReplicatedStorage
+	if not ReplicatedStorage:FindFirstChild("RedEvent") then
+		local ReliableRemote = Instance.new("RemoteEvent")
+		ReliableRemote.Name = "ReliableRedEvent"
+		ReliableRemote.Parent = ReplicatedStorage
+
+		local UnreliableRemote = Instance.new("UnreliableRemoteEvent")
+		UnreliableRemote.Name = "UnreliableRedEvent"
+		UnreliableRemote.Parent = ReplicatedStorage
 	end
 
 	require(script.ServerEvent).Start()
 else
-	Remote = ReplicatedStorage:WaitForChild("RedEvent") :: RemoteEvent
+	ReplicatedStorage:WaitForChild("ReliableRedEvent")
+	ReplicatedStorage:WaitForChild("UnreliableRedEvent")
 
 	require(script.ClientEvent).Start()
 end
