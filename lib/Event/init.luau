@@ -30,7 +30,7 @@ local function Client<T...>(self: Event<T...>): ClientEvent.Client<T...>
 	assert(RunService:IsClient(), "Client events can only be accessed from the client")
 
 	if not self.ClientEvent then
-		self.ClientEvent = ClientEvent(self.Id, self.Validate)
+		self.ClientEvent = ClientEvent(self.Id) :: any
 	end
 
 	return self.ClientEvent :: any

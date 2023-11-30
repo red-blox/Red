@@ -1,35 +1,27 @@
-local ClientEvent = require(script.Parent.Parent.ClientEvent)
+local Spawn = require(script.Parent.Parent.Parent.Spawn)
 
-local function PackArgs(...: any)
-	return { ... }
-end
+local Net = require(script.Parent.Parent.Net)
 
 export type Client<T...> = {
 	Id: string,
-	Listening: boolean,
-	Validate: (...unknown) -> T...,
 
 	Fire: (self: Client<T...>, T...) -> (),
-
 	On: (self: Client<T...>, Callback: (T...) -> ()) -> (),
 }
 
-local function Fire<T...>(self: Client<T...>, ...)
-	ClientEvent.Fire(self.Id, PackArgs(...))
+local function Fire<T...>(self: Client<T...>, ...: T...)
+	Net.Client.SendReliableEvent(self.Id, table.pack(...))
 end
 
 local function On<T...>(self: Client<T...>, Callback: (T...) -> ())
-	assert(not self.Listening, "Event is already listening")
-	self.Listening = true
-
-	ClientEvent.Listen(self.Id, Callback)
+	Net.Client.SetListener(self.Id, function(Args)
+		Spawn(Callback, table.unpack(Args))
+	end)
 end
 
-local function Client<T...>(Id: string, Validate: (...unknown) -> T...): Client<T...>
+local function Client<T...>(Id: string): Client<T...>
 	return {
 		Id = Id,
-		Listening = false,
-		Validate = Validate,
 
 		Fire = Fire,
 		On = On,

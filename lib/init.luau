@@ -12,12 +12,12 @@ if RunService:IsServer() then
 		UnreliableRemote.Parent = ReplicatedStorage
 	end
 
-	require(script.ServerEvent).Start()
+	require(script.Net).Server.Start()
 else
 	ReplicatedStorage:WaitForChild("ReliableRedEvent")
 	ReplicatedStorage:WaitForChild("UnreliableRedEvent")
 
-	require(script.ClientEvent).Start()
+	require(script.Net).Client.Start()
 end
 
 return {
