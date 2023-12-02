@@ -2,11 +2,13 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 
 if RunService:IsServer() then
-	if not ReplicatedStorage:FindFirstChild("RedEvent") then
+	if not ReplicatedStorage:FindFirstChild("ReliableRedEvent") then
 		local ReliableRemote = Instance.new("RemoteEvent")
 		ReliableRemote.Name = "ReliableRedEvent"
 		ReliableRemote.Parent = ReplicatedStorage
+	end
 
+	if not ReplicatedStorage:FindFirstChild("UnreliableRedEvent") then
 		local UnreliableRemote = Instance.new("UnreliableRemoteEvent")
 		UnreliableRemote.Name = "UnreliableRedEvent"
 		UnreliableRemote.Parent = ReplicatedStorage
