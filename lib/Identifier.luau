@@ -3,7 +3,7 @@ local RunService = game:GetService("RunService")
 
 local Future = require(script.Parent.Parent.Future)
 
-local Remote = ReplicatedStorage:WaitForChild("RedEvent")
+local Remote = ReplicatedStorage:WaitForChild("ReliableRedEvent")
 local Identifier = {}
 
 local NextShared = 0
