@@ -67,6 +67,7 @@ local function Start()
 				local CallThread = CallMap[CallId]
 
 				if CallThread then
+					CallMap[CallId] = nil
 					coroutine.resume(CallThread, table.unpack(CallList))
 				end
 			end
@@ -91,7 +92,7 @@ local function Start()
 				local CallThread = CallMap[CallId]
 
 				if CallThread then
-					coroutine.resume(CallThread, table.unpack(CallList))
+					coroutine.resume(CallThread, CallList)
 					CallMap[CallId] = nil
 				end
 			end
