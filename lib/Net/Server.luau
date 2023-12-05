@@ -104,7 +104,7 @@ local function Start()
 		end
 	end)
 
-	UnreliableRemote.OnServerEvent:Connect(function(Player, IncomingFireSection, IncomingCallSection)
+	UnreliableRemote.OnServerEvent:Connect(function(Player, IncomingFireSection)
 		local FireSectionValid, FireSection = FireSectionCheck(IncomingFireSection)
 
 		if FireSectionValid then

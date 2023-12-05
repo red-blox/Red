@@ -68,13 +68,13 @@ local function Start()
 
 				if CallThread then
 					CallMap[CallId] = nil
-					coroutine.resume(CallThread, table.unpack(CallList))
+					coroutine.resume(CallThread, CallList)
 				end
 			end
 		end
 	end)
 
-	UnreliableRemote.OnClientEvent:Connect(function(IncomingFireSection, IncomingCallSection)
+	UnreliableRemote.OnClientEvent:Connect(function(IncomingFireSection)
 		if IncomingFireSection then
 			for EventId, CallList in IncomingFireSection do
 				local Listener = ListenerMap[EventId]
@@ -83,17 +83,6 @@ local function Start()
 					for _, Call in CallList do
 						Listener(Call)
 					end
-				end
-			end
-		end
-
-		if IncomingCallSection then
-			for CallId, CallList in IncomingCallSection do
-				local CallThread = CallMap[CallId]
-
-				if CallThread then
-					coroutine.resume(CallThread, CallList)
-					CallMap[CallId] = nil
 				end
 			end
 		end
