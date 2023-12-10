@@ -27,9 +27,15 @@ function Identifier.Shared(Name: string)
 				return Id
 			end
 		else
+			local delayWarn = task.delay(5, function()
+				warn(`Yielded while initializing identifier: {Name}. It may not exist on the server!`)
+			end)
+
 			while not Remote:GetAttribute(Name) do
 				Remote.AttributeChanged:Wait()
 			end
+
+			task.cancel(delayWarn)
 
 			return Remote:GetAttribute(Name)
 		end
