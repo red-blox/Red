@@ -8,6 +8,8 @@ export type Server<T...> = {
 	Id: string,
 	Validate: (...unknown) -> T...,
 
+	Unreliable: boolean,
+
 	Fire: (self: Server<T...>, Player: Player, T...) -> (),
 	FireAll: (self: Server<T...>, T...) -> (),
 	FireAllExcept: (self: Server<T...>, Except: Player, T...) -> (),
@@ -18,14 +20,22 @@ export type Server<T...> = {
 }
 
 local function Fire<T...>(self: Server<T...>, Player: Player, ...: T...)
-	Net.Server.SendReliableEvent(Player, self.Id, table.pack(...))
+	if self.Unreliable then
+		Net.Server.SendUnreliableEvent(Player, self.Id, table.pack(...))
+	else
+		Net.Server.SendReliableEvent(Player, self.Id, table.pack(...))
+	end
 end
 
 local function FireAll<T...>(self: Server<T...>, ...: T...)
 	local Args = table.pack(...)
 
 	for _, Player in Players:GetPlayers() do
-		Net.Server.SendReliableEvent(Player, self.Id, Args)
+		if self.Unreliable then
+			Net.Server.SendUnreliableEvent(Player, self.Id, Args)
+		else
+			Net.Server.SendReliableEvent(Player, self.Id, Args)
+		end
 	end
 end
 
@@ -34,7 +44,11 @@ local function FireAllExcept<T...>(self: Server<T...>, Except: Player, ...: T...
 
 	for _, Player in Players:GetPlayers() do
 		if Player ~= Except then
-			Net.Server.SendReliableEvent(Player, self.Id, Args)
+			if self.Unreliable then
+				Net.Server.SendUnreliableEvent(Player, self.Id, Args)
+			else
+				Net.Server.SendReliableEvent(Player, self.Id, Args)
+			end
 		end
 	end
 end
@@ -43,7 +57,11 @@ local function FireList<T...>(self: Server<T...>, List: { Player }, ...: T...)
 	local Args = table.pack(...)
 
 	for _, Player in List do
-		Net.Server.SendReliableEvent(Player, self.Id, Args)
+		if self.Unreliable then
+			Net.Server.SendUnreliableEvent(Player, self.Id, Args)
+		else
+			Net.Server.SendReliableEvent(Player, self.Id, Args)
+		end
 	end
 end
 
@@ -52,7 +70,11 @@ local function FireWithFilter<T...>(self: Server<T...>, Filter: (Player) -> bool
 
 	for _, Player in Players:GetPlayers() do
 		if Filter(Player) then
-			Net.Server.SendReliableEvent(Player, self.Id, Args)
+			if self.Unreliable then
+				Net.Server.SendUnreliableEvent(Player, self.Id, Args)
+			else
+				Net.Server.SendReliableEvent(Player, self.Id, Args)
+			end
 		end
 	end
 end
@@ -67,10 +89,12 @@ local function On<T...>(self: Server<T...>, Callback: (Player, T...) -> ())
 	end)
 end
 
-local function Server<T...>(Id: string, Validate: (...unknown) -> T...): Server<T...>
+local function Server<T...>(Id: string, Validate: (...unknown) -> T..., Unreliable: boolean): Server<T...>
 	return {
 		Id = Id,
 		Validate = Validate,
+
+		Unreliable = Unreliable,
 
 		Fire = Fire,
 		FireAll = FireAll,

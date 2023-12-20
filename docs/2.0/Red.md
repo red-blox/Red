@@ -8,12 +8,14 @@ Creates a new [event](./Event/index) object.
 
 ```lua
 <T...>(
-	Name: string, -- The name of the event
+	Name: string | { Name: string, Unreliable: boolean? }, -- Event config
 	Validate: (...unknown) -> T..., -- Validates event payloads
 ) -> Event<T...>
 ```
 
-This will create an event with the passed name.
+This will create an event with the passed config.
+
+If you pass a string, it will be used as the event name and the event will be reliable. If you pass a table you have the option to make the event unreliable.
 
 ::: danger
 The name of the event must be unique, using the same name twice will result in an error.

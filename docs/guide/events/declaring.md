@@ -12,7 +12,7 @@ return Red.Event("MostBasicEvent", function()
 end)
 ```
 
-This is the most basic event in Red. Here we've declared an event which has no payload. The event name is gathered from the module name.
+This is the most basic event in Red. Here we've declared an event which has no payload. The event name is passed as the first argument to `Red.Event`.
 
 ::: danger
 Make sure the event name is unique - using the same name multiple times will result in an error.
@@ -79,3 +79,18 @@ end)
 ::: warning
 Ensure you follow rule 1 when using multiple payloads. The callback must return the arguments in the same order they were passed in.
 :::
+
+## Unreliable Events
+
+Events can be unreliable. This means that the event will not be guaranteed to fire. This is useful for events that are not important, or are fired very frequently.
+
+To make an event unreliable, pass a table as the first argument to `Red.Event`.
+
+```lua
+return Red.Event({
+	Name = "UnreliableEvent",
+	Unreliable = true,
+}, function()
+	return
+end)
+```
