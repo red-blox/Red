@@ -11,7 +11,7 @@ local Net = require(script.Parent.Net)
 
 type SharedBaseEvent<T...> = {
 	Id: string,
-	Reliable: boolean,
+	Unreliable: boolean,
 
 	FireClient: (self: SharedBaseEvent<T...>, Player: Player, T...) -> (),
 	FireAllClients: (self: SharedBaseEvent<T...>, T...) -> (),
@@ -43,10 +43,10 @@ export type SharedSignalEvent<T...> = SharedBaseEvent<T...> & {
 local function FireClient<T...>(self: SharedBaseEvent<T...>, Player: Player, ...)
 	assert(RunService:IsServer(), "FireClient can only be called from the server")
 
-	if self.Reliable then
-		Net.Server.SendReliableEvent(Player, self.Id, table.pack(...))
-	else
+	if self.Unreliable then
 		Net.Server.SendUnreliableEvent(Player, self.Id, table.pack(...))
+	else
+		Net.Server.SendReliableEvent(Player, self.Id, table.pack(...))
 	end
 end
 
@@ -55,13 +55,13 @@ local function FireAllClients<T...>(self: SharedBaseEvent<T...>, ...)
 
 	local Args = table.pack(...)
 
-	if self.Reliable then
+	if self.Unreliable then
 		for _, Player in Players:GetPlayers() do
-			Net.Server.SendReliableEvent(Player, self.Id, Args)
+			Net.Server.SendUnreliableEvent(Player, self.Id, Args)
 		end
 	else
 		for _, Player in Players:GetPlayers() do
-			Net.Server.SendUnreliableEvent(Player, self.Id, Args)
+			Net.Server.SendReliableEvent(Player, self.Id, Args)
 		end
 	end
 end
@@ -71,16 +71,16 @@ local function FireAllClientsExcept<T...>(self: SharedBaseEvent<T...>, Player: P
 
 	local Args = table.pack(...)
 
-	if self.Reliable then
+	if self.Unreliable then
 		for _, OtherPlayer in Players:GetPlayers() do
 			if OtherPlayer ~= Player then
-				Net.Server.SendReliableEvent(OtherPlayer, self.Id, Args)
+				Net.Server.SendUnreliableEvent(OtherPlayer, self.Id, Args)
 			end
 		end
 	else
 		for _, OtherPlayer in Players:GetPlayers() do
 			if OtherPlayer ~= Player then
-				Net.Server.SendUnreliableEvent(OtherPlayer, self.Id, Args)
+				Net.Server.SendReliableEvent(OtherPlayer, self.Id, Args)
 			end
 		end
 	end
@@ -91,13 +91,13 @@ local function FireClients<T...>(self: SharedBaseEvent<T...>, Players: { Player 
 
 	local Args = table.pack(...)
 
-	if self.Reliable then
+	if self.Unreliable then
 		for _, Player in Players do
-			Net.Server.SendReliableEvent(Player, self.Id, Args)
+			Net.Server.SendUnreliableEvent(Player, self.Id, Args)
 		end
 	else
 		for _, Player in Players do
-			Net.Server.SendUnreliableEvent(Player, self.Id, Args)
+			Net.Server.SendReliableEvent(Player, self.Id, Args)
 		end
 	end
 end
@@ -109,10 +109,10 @@ local function FireFilteredClients<T...>(self: SharedBaseEvent<T...>, Filter: (P
 
 	for _, Player in Players:GetPlayers() do
 		if Filter(Player) then
-			if self.Reliable then
-				Net.Server.SendReliableEvent(Player, self.Id, Args)
-			else
+			if self.Unreliable then
 				Net.Server.SendUnreliableEvent(Player, self.Id, Args)
+			else
+				Net.Server.SendReliableEvent(Player, self.Id, Args)
 			end
 		end
 	end
@@ -121,10 +121,12 @@ end
 local function FireServer<T...>(self: SharedBaseEvent<T...>, ...)
 	assert(RunService:IsClient(), "FireServer can only be called from the client")
 
-	if self.Reliable then
-		Net.Client.SendReliableEvent(self.Id, table.pack(...))
+	local Args = table.pack(...)
+
+	if self.Unreliable then
+		Net.Client.SendUnreliableEvent(self.Id, Args)
 	else
-		Net.Client.SendUnreliableEvent(self.Id, table.pack(...))
+		Net.Client.SendReliableEvent(self.Id, Args)
 	end
 end
 
@@ -159,10 +161,10 @@ type SharedEventOptions = {
 
 type ValidateFunction<T...> = (...unknown) -> T...
 
-local function SharedBaseEvent<T...>(Name: string, Reliable: boolean): SharedBaseEvent<T...>
+local function SharedBaseEvent<T...>(Name: string, Unreliable: boolean): SharedBaseEvent<T...>
 	local self = {
 		Id = Identifier.Shared(Name):Await(),
-		Reliable = Reliable,
+		Unreliable = Unreliable,
 
 		FireClient = FireClient,
 		FireAllClients = FireAllClients,
@@ -187,7 +189,7 @@ local function SharedCallEvent<T...>(
 			Unreliable = false,
 		}
 
-	local self: any = SharedBaseEvent(ParsedOptions.Name, not ParsedOptions.Unreliable)
+	local self: any = SharedBaseEvent(ParsedOptions.Name, ParsedOptions.Unreliable or false)
 
 	self.CallMode = "Call"
 
@@ -228,7 +230,7 @@ local function SharedSignalEvent<T...>(
 			Unreliable = false,
 		}
 
-	local self: any = SharedBaseEvent(ParsedOptions.Name, not ParsedOptions.Unreliable)
+	local self: any = SharedBaseEvent(ParsedOptions.Name, ParsedOptions.Unreliable or false)
 
 	self.CallMode = "Signal"
 
