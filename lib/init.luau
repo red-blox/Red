@@ -22,8 +22,11 @@ else
 	require(script.Net).Client.Start()
 end
 
+local SharedEvents = require(script.SharedEvent)
+
 return {
 	Event = require(script.Event),
 	Function = require(script.Function),
-	SharedEvent = require(script.SharedEvent),
+	SharedEvent = SharedEvents.SharedCallEvent,
+	SharedSignalEvent = SharedEvents.SharedSignalEvent,
 }

@@ -1,3 +1,5 @@
+-- For implementation discussion, see: https://github.com/red-blox/Red/issues/8
+
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 
@@ -15,6 +17,7 @@ type SharedBaseEvent<T...> = {
 	FireAllClients: (self: SharedBaseEvent<T...>, T...) -> (),
 	FireAllClientsExcept: (self: SharedBaseEvent<T...>, Player: Player, T...) -> (),
 	FireClients: (self: SharedBaseEvent<T...>, Players: { Player }, T...) -> (),
+	FireFilteredClients: (self: SharedBaseEvent<T...>, Filter: (Player) -> boolean, T...) -> (),
 
 	FireServer: (self: SharedBaseEvent<T...>, T...) -> (),
 }
@@ -36,8 +39,6 @@ export type SharedSignalEvent<T...> = SharedBaseEvent<T...> & {
 	OnServer: (self: SharedSignalEvent<T...>, Listener: (Player: Player, T...) -> ()) -> () -> (),
 	OnClient: (self: SharedSignalEvent<T...>, Listener: (T...) -> ()) -> () -> (),
 }
-
-export type SharedEvent<T...> = SharedCallEvent<T...> | SharedSignalEvent<T...>
 
 local function FireClient<T...>(self: SharedBaseEvent<T...>, Player: Player, ...)
 	assert(RunService:IsServer(), "FireClient can only be called from the server")
@@ -101,6 +102,22 @@ local function FireClients<T...>(self: SharedBaseEvent<T...>, Players: { Player 
 	end
 end
 
+local function FireFilteredClients<T...>(self: SharedBaseEvent<T...>, Filter: (Player) -> boolean, ...)
+	assert(RunService:IsServer(), "FireFilteredClients can only be called from the server")
+
+	local Args = table.pack(...)
+
+	for _, Player in Players:GetPlayers() do
+		if Filter(Player) then
+			if self.Reliable then
+				Net.Server.SendReliableEvent(Player, self.Id, Args)
+			else
+				Net.Server.SendUnreliableEvent(Player, self.Id, Args)
+			end
+		end
+	end
+end
+
 local function FireServer<T...>(self: SharedBaseEvent<T...>, ...)
 	assert(RunService:IsClient(), "FireServer can only be called from the client")
 
@@ -135,83 +152,113 @@ local function OnClient<T...>(self: SharedSignalEvent<T...>, Listener: (T...) ->
 	return self.Signal:Connect(Listener :: any)
 end
 
-type SharedEventOptions<T...> = {
+type SharedEventOptions = {
 	Name: string,
 	Unreliable: boolean?,
-
-	Validate: (...unknown) -> T...,
 }
 
-type ConstructorType =
-	(<T...>(Options: SharedEventOptions<T...> & { CallMode: "Call"? }) -> SharedCallEvent<T...>)
-	& (<T...>(Options: SharedEventOptions<T...> & { CallMode: "Signal" }) -> SharedSignalEvent<T...>)
+type ValidateFunction<T...> = (...unknown) -> T...
 
-local SharedEvent: ConstructorType = function(Options: any)
+local function SharedBaseEvent<T...>(Name: string, Reliable: boolean): SharedBaseEvent<T...>
 	local self = {
-		Id = Identifier.Shared(Options.Name):Await(),
-		Reliable = not Options.Unreliable,
+		Id = Identifier.Shared(Name):Await(),
+		Reliable = Reliable,
 
 		FireClient = FireClient,
 		FireAllClients = FireAllClients,
 		FireAllClientsExcept = FireAllClientsExcept,
 		FireClients = FireClients,
+		FireFilteredClients = FireFilteredClients,
 
 		FireServer = FireServer,
 	}
 
-	if Options.CallMode == "Call" then
-		self.CallMode = "Call"
+	return self :: any
+end
 
-		self.SetServerListener = SetServerListener
-		self.SetClientListener = SetClientListener
+local function SharedCallEvent<T...>(
+	Options: string | SharedEventOptions,
+	Validate: ValidateFunction<T...>
+): SharedCallEvent<T...>
+	local ParsedOptions = if typeof(Options) ~= "string"
+		then Options
+		else {
+			Name = Options,
+			Unreliable = false,
+		}
 
-		self.Listener = nil :: (...any) -> ()?
+	local self: any = SharedBaseEvent(ParsedOptions.Name, not ParsedOptions.Unreliable)
 
-		if RunService:IsServer() then
-			Net.Server.SetListener(self.Id, function(Player, Args)
-				Spawn(function(Player: Player, ...: any)
-					if self.Listener and pcall(Options.Validate, ...) then
-						self.Listener(Player, ...)
-					end
-				end, Player, table.unpack(Args))
-			end)
-		else
-			Net.Client.SetListener(self.Id, function(Args)
-				Spawn(function(...: any)
-					if self.Listener and pcall(Options.Validate, ...) then
-						self.Listener(...)
-					end
-				end, table.unpack(Args))
-			end)
-		end
-	elseif Options.CallMode == "Signal" then
-		self.CallMode = "Signal"
+	self.CallMode = "Call"
 
-		self.Signal = Signal()
+	self.SetServerListener = SetServerListener
+	self.SetClientListener = SetClientListener
 
-		self.OnServer = OnServer
-		self.OnClient = OnClient
+	self.Listener = nil :: (...any) -> ()?
 
-		if RunService:IsServer() then
-			Net.Server.SetListener(self.Id, function(Player, Args)
-				Spawn(function(Player: Player, ...: any)
-					if pcall(Options.Validate, ...) then
-						self.Signal:Fire(Player, ...)
-					end
-				end, Player, table.unpack(Args))
-			end)
-		else
-			Net.Client.SetListener(self.Id, function(Args)
-				Spawn(function(...: any)
-					if pcall(Options.Validate, ...) then
-						self.Signal:Fire(...)
-					end
-				end, table.unpack(Args))
-			end)
-		end
+	if RunService:IsServer() then
+		Net.Server.SetListener(self.Id, function(Player, Args)
+			Spawn(function(Player: Player, ...: any)
+				if self.Listener and pcall(Validate, ...) then
+					self.Listener(Player, ...)
+				end
+			end, Player, table.unpack(Args))
+		end)
+	else
+		Net.Client.SetListener(self.Id, function(Args)
+			Spawn(function(...: any)
+				if self.Listener and pcall(Validate, ...) then
+					self.Listener(...)
+				end
+			end, table.unpack(Args))
+		end)
 	end
 
 	return self
-end :: any
+end
 
-return SharedEvent
+local function SharedSignalEvent<T...>(
+	Options: string | SharedEventOptions,
+	Validate: ValidateFunction<T...>
+): SharedSignalEvent<T...>
+	local ParsedOptions = if typeof(Options) ~= "string"
+		then Options
+		else {
+			Name = Options,
+			Unreliable = false,
+		}
+
+	local self: any = SharedBaseEvent(ParsedOptions.Name, not ParsedOptions.Unreliable)
+
+	self.CallMode = "Signal"
+
+	self.Signal = Signal()
+
+	self.OnServer = OnServer
+	self.OnClient = OnClient
+
+	if RunService:IsServer() then
+		Net.Server.SetListener(self.Id, function(Player, Args)
+			Spawn(function(Player: Player, ...: any)
+				if pcall(Validate, ...) then
+					self.Signal:Fire(Player, ...)
+				end
+			end, Player, table.unpack(Args))
+		end)
+	else
+		Net.Client.SetListener(self.Id, function(Args)
+			Spawn(function(...: any)
+				if pcall(Validate, ...) then
+					self.Signal:Fire(...)
+				end
+			end, table.unpack(Args))
+		end)
+	end
+
+	return self :: SharedSignalEvent<T...>
+end
+
+return {
+	SharedCallEvent = SharedCallEvent,
+	SharedSignalEvent = SharedSignalEvent,
+}
