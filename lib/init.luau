@@ -25,4 +25,5 @@ end
 return {
 	Event = require(script.Event),
 	Function = require(script.Function),
+	SharedEvent = require(script.SharedEvent),
 }
