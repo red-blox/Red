@@ -94,7 +94,7 @@ Sets the event's listener.
 
 ```lua
 <T...>(
-	Function: (...: T...) -> (), -- The function to connect
+	Listener: (T...) -> (), -- The function to connect
 ) -> ()
 ```
 

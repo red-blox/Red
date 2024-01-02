@@ -24,7 +24,7 @@ Sets the event's listener.
 
 ```lua
 <T...>(
-	Listener: (...T...) -> (), -- The listener
+	Listener: (T...) -> (), -- The listener
 ) -> ()
 ```
 

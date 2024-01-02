@@ -25,6 +25,7 @@ function sidebar() {
 					{ text: 'Declaring Events', link: '/guide/events/declaring' },
 					{ text: 'Server Usage', link: '/guide/events/server' },
 					{ text: 'Client Usage', link: '/guide/events/client' },
+					{ text: 'Shared Events', link: '/guide/events/sharedevent' }
 				]
 			},
 			{
@@ -47,6 +48,8 @@ function sidebar() {
 						]
 					},
 					{ text: 'Function', link: '/2.0/Function' },
+					{ text: 'SharedEvent', link: '/2.0/SharedEvent' },
+					{ text: 'SharedSignalEvent', link: '/2.0/SharedSignalEvent' }
 				],
 			}
 		],

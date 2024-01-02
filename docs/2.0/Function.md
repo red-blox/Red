@@ -9,7 +9,7 @@ Sets the function's callback.
 ```lua
 <A..., R...>(
 	Callback: (Player, A...) -> R... -- The callback to set.
-)
+) -> ()
 ```
 
 A singular callback must be set on the server to allow clients to call the function. This callback is given the arguments and must return the expected return values. This callback may only be set on the server, attempting to set it on the client will result in an error.
@@ -33,7 +33,7 @@ Calls the function on the server.
 ```lua
 <A..., R...>(
 	...A: any -- The arguments to pass to the function.
-): Future<R...>
+) -> Future<R...>
 ```
 
 A function is called on the client to call the function on the server. This method returns a [Future](https://util.redblox.dev/future) which can be used to await the return values or connect a function to be called when the return values are received.
