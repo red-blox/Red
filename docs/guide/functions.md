@@ -56,9 +56,9 @@ end)
 
 :::
 
-## Set Callback
+## Setting the Callback
 
-A singular callback must be set on the server to allow clients to call the event. This callback is given the arguments and must return the expected return values.
+A singular callback must be set on the server to allow clients to call the function. This callback is given the arguments and must return the expected return values. This callback may only be set on the server, attempting to set it on the client will result in an error.
 
 ```lua
 local Function = require(Path.To.Function)
@@ -68,16 +68,14 @@ Function:SetCallback(function(Player, Arg1, Arg2, Arg3)
 end)
 ```
 
-::: danger
-If the callback errors then the client will never recieve any value and will yield forever. **Doing this is a memory leak!** Do not rely on erroring not sending back values.
-:::
-
 ## Calling
 
 Functions can only be called from the client. The client must pass valid arguments to the function, and will be given back a [Future](https://util.redblox.dev/future) that completes with the returned values.
 
+It also returns a success boolean, similar to pcall, which is false if the server's callback function errored, and true if it was successful.
+
 ```lua
 local Function = require(Path.To.Function)
 
-local Ret1, Ret2, Ret3 = Function:Call("Hello", 1, true):Await()
+local Success, Ret1, Ret2, Ret3 = Function:Call("Hello", 1, true):Await()
 ```
