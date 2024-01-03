@@ -4,13 +4,13 @@ SharedEvents are built on the same backend networking as regular events. However
 Unlike [SharedEvents](SharedEvent), SharedSignalEvents may have any number of listeners set.
 
 ## OnServer <Badge type="tip" text="Server"></Badge>
-Sets the server callback.
+Adds a server callback, returning a disconnect function.
 ```lua
 <T...>(
     Listener: (Player: Player, T...) -> () -- The listener to register
-) -> ()
+) -> (() -> ()) -- Disconnect function
 ```
-This method sets the server callback. Errors if called from the client.
+This method adds a server callback, returning a disconnect function. Errors if called from the client.
 ```lua
 MyEvent:OnServer(function(Player, Argument)
     print(Player, Argument)
@@ -18,13 +18,13 @@ end)
 ```
 
 ## OnClient <Badge type="warning" text="Client"></Badge>
-Sets the client callback.
+Adds a client callback, returning a disconnect function.
 ```lua
 <T...>(
     Listener: (T...) -> () -- The listener to register
-) -> ()
+) -> (() -> ()) -- Disconnect function
 ```
-This method sets the client callback. Errors if called from the server.
+This method adds a client callback, returning a disconnect function. Errors if called from the server.
 ```lua
 MyEvent:OnClient(function(Argument)
     print(Argument)
