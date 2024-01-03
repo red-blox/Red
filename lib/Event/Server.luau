@@ -82,7 +82,7 @@ end
 local function On<T...>(self: Server<T...>, Callback: (Player, T...) -> ())
 	Net.Server.SetListener(self.Id, function(Player, Args)
 		Spawn(function(self: typeof(self), Player: Player, ...: any)
-			if self.Validate(...) then
+			if pcall(self.Validate, ...) then
 				Callback(Player, ...)
 			end
 		end, self, Player, table.unpack(Args))
