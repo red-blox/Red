@@ -3,7 +3,7 @@ Shared Events are simply a different way of using Events. They both use the same
 
 They have the major benefit of not needing to explicitly call `Event:Server` or `Event:Client` before being usable. Both your server and client code can simply require them and start using them.
 
-There are two types of Shared Events: The default `SharedEvent`, and the Signal-based `SharedSignalEvent`. By default, Shared Events only allow you to set one callback function, but Shared Signal Events allow you to have any number of callbacks.
+There are two types of Shared Events: The default [SharedEvent](/2.0/SharedEvent), and the Signal-based [SharedSignalEvent](/2.0/SharedSignalEvent). By default, Shared Events only allow you to set one callback function, but Shared Signal Events allow you to have any number of callbacks.
 
 This is marginally worse for performance, as it has to use a Signal to fire the callbacks - hence why it is not the default.
 
@@ -72,9 +72,12 @@ end)
 Events.PayloadSignalEvent:OnClient(function(number)
     print("Callback 1", number)
 end)
-Events.PayloadSignalEvent:OnClient(function(number)
+
+local DisconnectFunction = Events.PayloadSignalEvent:OnClient(function(number)
     print("Callback 2", number)
 end)
+
+DisconnectFunction() -- Disconnects the 2nd callback.
 ```
 
 ### Server
@@ -92,9 +95,12 @@ end)
 Events.PayloadSignalEvent:OnServer(function(Player, number)
     print("Callback 1 from", Player, number)
 end)
-Events.PayloadSignalEvent:OnServer(function(Player, number)
+
+local DisconnectFunction = Events.PayloadSignalEvent:OnServer(function(Player, number)
     print("Callback 2 from", Player, number)
 end)
+
+DisconnectFunction() -- Disconnects the 2nd callback.
 ```
 
 ## Firing Events
