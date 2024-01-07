@@ -19,6 +19,13 @@ export type Function<A..., R...> = {
 	end)),
 }
 
+local function Trace(err)
+	-- Return at 2nd level so the traceback starts at the function, not here.
+	local trace = debug.traceback(err, 2)
+	warn(`Red Function error: {trace}`)
+	return trace
+end
+
 local function SetCallback<A..., R...>(self: Function<A..., R...>, Callback: (Player, A...) -> R...)
 	assert(RunService:IsServer(), "Cannot set callback to function on client")
 
@@ -31,7 +38,7 @@ local function SetCallback<A..., R...>(self: Function<A..., R...>, Callback: (Pl
 
 		Spawn(function(Player: Player, CallId: string, ...: any)
 			if pcall(self.Validate, ...) then
-				Net.Server.SendCallReturn(Player, CallId, table.pack(pcall(Callback, Player, ...)))
+				Net.Server.SendCallReturn(Player, CallId, table.pack(xpcall(Callback, Trace, Player, ...)))
 			end
 		end, Player, CallId, unpack(Args))
 	end)

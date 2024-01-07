@@ -3,6 +3,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 function TestEvents()
 	local ComplexFunction = require(ReplicatedStorage.ComplexFunction)
 	local EmptyFunction = require(ReplicatedStorage.EmptyFunction)
+	local ErrorFunction = require(ReplicatedStorage.ErrorFunction)
 	local SimpleFunction = require(ReplicatedStorage.SimpleFunction)
 
 	local ComplexEvent = require(ReplicatedStorage.ComplexEvent):Client()
@@ -40,6 +41,7 @@ function TestEvents()
 	print(ComplexFunction:Call({ one = { "String Literal", 123 }, two = { 123, "String Literal" } }, "hi", 12):Await())
 	print(SimpleFunction:Call(123):Await())
 	print(EmptyFunction:Call():Await())
+	print(ErrorFunction:Call():Await())
 
 	task.wait(0.5)
 
@@ -91,4 +93,5 @@ function TestSharedEvents()
 	SharedEvents.Ready:FireServer()
 end
 
-TestSharedEvents()
+TestEvents()
+-- TestSharedEvents()

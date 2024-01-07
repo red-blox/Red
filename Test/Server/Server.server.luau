@@ -4,6 +4,7 @@ function TestEvents()
 	local ComplexFunction = require(ReplicatedStorage.ComplexFunction)
 	local SimpleFunction = require(ReplicatedStorage.SimpleFunction)
 	local EmptyFunction = require(ReplicatedStorage.EmptyFunction)
+	local ErrorFunction = require(ReplicatedStorage.ErrorFunction)
 
 	local ComplexEvent = require(ReplicatedStorage.ComplexEvent):Server()
 	local SimpleEvent = require(ReplicatedStorage.SimpleEvent):Server()
@@ -29,6 +30,11 @@ function TestEvents()
 		print("EmptyFunction", Player)
 
 		return
+	end)
+
+	ErrorFunction:SetCallback(function(Player)
+		assert(1 == 2, "Assert failed.")
+		return ""
 	end)
 
 	print("Registering Event Listeners")
@@ -166,4 +172,5 @@ function TestSharedEvents()
 	end)
 end
 
-TestSharedEvents()
+TestEvents()
+-- TestSharedEvents()
