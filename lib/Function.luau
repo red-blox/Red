@@ -19,11 +19,13 @@ export type Function<A..., R...> = {
 	end)),
 }
 
-local function Trace(err)
+local function Trace(err: unknown, ...)
 	-- Return at 2nd level so the traceback starts at the function, not here.
-	local trace = debug.traceback(err, 2)
-	warn(`Red Function error: {trace}`)
-	return trace
+	if typeof(err) == "string" then
+		local trace = debug.traceback(err, 2)
+		warn(`Red Function error: {trace}`)
+	end
+	return err, ...
 end
 
 local function SetCallback<A..., R...>(self: Function<A..., R...>, Callback: (Player, A...) -> R...)
