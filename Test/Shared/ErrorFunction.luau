@@ -1,0 +1,6 @@
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Guard = require(ReplicatedStorage.Packages.Guard)
+local Red = require(ReplicatedStorage.Packages.Red)
+return Red.Function("ErrorFunction", function() end, function(Ret1)
+	return Guard.String(Ret1)
+end)
