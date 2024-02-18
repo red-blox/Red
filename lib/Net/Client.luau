@@ -8,14 +8,11 @@ local ListenerMap: { [string]: ({ any }) -> () } = {}
 local CallMap: { [string]: thread } = {}
 local Outgoing: {
 	Reliable: { [string]: { { any } } },
-	Unreliable: { [string]: { { any } } },
 	Call: { [string]: { { any } } },
-} =
-	{
-		Reliable = {},
-		Unreliable = {},
-		Call = {},
-	}
+} = {
+	Reliable = {},
+	Call = {},
+}
 
 local function SendReliableEvent(EventId: string, CallList: { any })
 	if not Outgoing.Reliable[EventId] then
@@ -26,11 +23,7 @@ local function SendReliableEvent(EventId: string, CallList: { any })
 end
 
 local function SendUnreliableEvent(EventId: string, CallList: { any })
-	if not Outgoing.Unreliable[EventId] then
-		Outgoing.Unreliable[EventId] = {}
-	end
-
-	table.insert(Outgoing.Unreliable[EventId], CallList)
+	UnreliableRemote:FireServer(EventId, CallList)
 end
 
 local function SetListener(EventId: string, Callback: ({ any }) -> ())
@@ -74,17 +67,11 @@ local function Start()
 		end
 	end)
 
-	UnreliableRemote.OnClientEvent:Connect(function(IncomingFireSection)
-		if IncomingFireSection then
-			for EventId, CallList in IncomingFireSection do
-				local Listener = ListenerMap[EventId]
+	UnreliableRemote.OnClientEvent:Connect(function(IncomingEventId, IncomingArgs)
+		local Listener = ListenerMap[IncomingEventId]
 
-				if Listener then
-					for _, Call in CallList do
-						Listener(Call)
-					end
-				end
-			end
+		if Listener then
+			Listener(IncomingArgs)
 		end
 	end)
 
@@ -94,12 +81,6 @@ local function Start()
 
 			Outgoing.Reliable = {}
 			Outgoing.Call = {}
-		end
-
-		if next(Outgoing.Unreliable) then
-			UnreliableRemote:FireServer(Outgoing.Unreliable)
-
-			Outgoing.Unreliable = {}
 		end
 	end)
 end

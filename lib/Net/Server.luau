@@ -13,17 +13,14 @@ local ListenerMap: { [string]: (Player, { any }) -> () } = {}
 local OutgoingMap: {
 	[Player]: {
 		Reliable: { [string]: { { any } } },
-		Unreliable: { [string]: { { any } } },
 		CallReturn: { [string]: { any } },
 	},
-} =
-	{}
+} = {}
 
 local function SendReliableEvent(Player: Player, EventId: string, Args: { any })
 	if not OutgoingMap[Player] then
 		OutgoingMap[Player] = {
 			Reliable = {},
-			Unreliable = {},
 			CallReturn = {},
 		}
 	end
@@ -36,19 +33,7 @@ local function SendReliableEvent(Player: Player, EventId: string, Args: { any })
 end
 
 local function SendUnreliableEvent(Player: Player, EventId: string, Args: { any })
-	if not OutgoingMap[Player] then
-		OutgoingMap[Player] = {
-			Reliable = {},
-			Unreliable = {},
-			CallReturn = {},
-		}
-	end
-
-	if not OutgoingMap[Player].Unreliable[EventId] then
-		OutgoingMap[Player].Unreliable[EventId] = {}
-	end
-
-	table.insert(OutgoingMap[Player].Unreliable[EventId], Args)
+	UnreliableRemote:FireClient(Player, EventId, Args)
 end
 
 local function SetListener(EventId: string, Callback: (Player, { any }) -> ())
@@ -59,7 +44,6 @@ local function SendCallReturn(Player: Player, CallId: string, Args: { any })
 	if not OutgoingMap[Player] then
 		OutgoingMap[Player] = {
 			Reliable = {},
-			Unreliable = {},
 			CallReturn = {},
 		}
 	end
@@ -104,18 +88,12 @@ local function Start()
 		end
 	end)
 
-	UnreliableRemote.OnServerEvent:Connect(function(Player, IncomingFireSection)
-		local FireSectionValid, FireSection = FireSectionCheck(IncomingFireSection)
+	UnreliableRemote.OnServerEvent:Connect(function(Player, IncomingEventId, IncomingArgs)
+		if type(IncomingEventId) == "string" and type(IncomingArgs) == "table" then
+			local Callback = ListenerMap[IncomingEventId]
 
-		if FireSectionValid then
-			for EventId, CallList in FireSection do
-				local Callback = ListenerMap[EventId]
-
-				if Callback then
-					for _, Call in CallList do
-						Callback(Player, Call)
-					end
-				end
+			if Callback then
+				Callback(Player, IncomingArgs)
 			end
 		end
 	end)
@@ -124,10 +102,6 @@ local function Start()
 		for Player, Outgoing in OutgoingMap do
 			if next(Outgoing.Reliable) or next(Outgoing.CallReturn) then
 				ReliableRemote:FireClient(Player, Outgoing.Reliable, Outgoing.CallReturn)
-			end
-
-			if next(Outgoing.Unreliable) then
-				UnreliableRemote:FireClient(Player, Outgoing.Unreliable)
 			end
 
 			OutgoingMap[Player] = nil
